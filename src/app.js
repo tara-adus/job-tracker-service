@@ -8,7 +8,8 @@ const port = 3000;
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  
+  res.setHeader('Access-Control-Allow-Origin','*');
+
   // Parse the request url
   const reqUrl = url.parse(req.url).pathname
   // Compare our request method
@@ -36,7 +37,8 @@ const server = http.createServer((req, res) => {
         res.end()
       }
   }
-});
+}
+);
 
 //make the server listen on a port
 server.listen(port, hostname, () => {
