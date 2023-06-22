@@ -9,9 +9,13 @@ const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
   res.setHeader('Access-Control-Allow-Origin','*');
+  res.setHeader('Access-Control-Allow-Headers', 'accept, content-type');
+  res.setHeader('Access-Control-Allow-Methods', 'HEAD, DELETE, POST, GET, OPTIONS, PUT, PATCH');
 
   // Parse the request url
   const reqUrl = url.parse(req.url).pathname
+  console.log("in backend")
+
   // Compare our request method
   if (req.method == "GET") {
       if (reqUrl == "/") {
@@ -26,16 +30,32 @@ const server = http.createServer((req, res) => {
         res.end()
       }
   } else if (req.method == "POST") {
+    console.log("at post")
     if (reqUrl == "/") {
       res.write("base url - no action taken")
       res.end()
     }else if (reqUrl == "/application") {
+        /* let body = req.body;
+        console.log(req);
         res.write("add job application")
-        res.end()
+        res.end() */
+
+        let body = '';
+        req.on('data', chunk => {
+          body += chunk.toString(); // convert Buffer to string
+        });
+        req.on('end', () => {
+          console.log(body);
+          res.end('ok');
+        });
+
       }else {
         res.write("invalid path")
         res.end()
       }
+  }else if (req.method == 'OPTIONS') {
+    console.log("at options")
+    res.end()
   }
 }
 );
