@@ -4,6 +4,8 @@ const url = require("url");
 const hostname = '127.0.0.1';
 const port = 3000;
 
+const {MongoClient} = require('mongodb');
+
 // create the HTTP server
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
@@ -22,7 +24,8 @@ const server = http.createServer((req, res) => {
         res.write("base url - no action taken")
         res.end()
       }else if (reqUrl == "/applications"){
-        res.write("retrieving all job application...")
+        res.write("retrieving all job applications...")
+        res.write(JSON.stringify());
         res.end()
       }
       else {
@@ -46,6 +49,7 @@ const server = http.createServer((req, res) => {
         });
         req.on('end', () => {
           console.log(body);
+          addJobApplication(body);
           res.end('ok');
         });
 
@@ -59,6 +63,50 @@ const server = http.createServer((req, res) => {
   }
 }
 );
+
+async function getJobApplications(){
+  const client = new MongoClient("mongodb://localhost:27017");
+  try{
+    await client.connect();
+    const cursor = await client.db("job_tracker").collection("job_applications").find();
+    const results = await cursor.toArray();
+    results.forEach((result) => { 
+      console.log(`jobApplication Info: _id: ${result._id} - ${result.jobId} - ${result.cname}`);
+    })
+    return results;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await client.close();
+  }
+}
+
+async function addJobApplication(jobApplicationInfo){
+  let jobAppDocument = JSON.parse(jobApplicationInfo);
+  const client = new MongoClient("mongodb://localhost:27017");
+  try{
+    /* right-click on Mongodb Compass and select “copy connection info" and use that the connect string here */
+    await client.connect();
+    await  listDatabases(client);
+    await addJobApplicationToMongoDB(client, jobAppDocument);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await client.close();
+  }
+}
+
+async function listDatabases(client){
+  databasesList = await client.db().admin().listDatabases();
+
+  console.log("Databases:");
+  databasesList.databases.forEach(db => console.log(` - ${db.name}`));
+};
+
+async function addJobApplicationToMongoDB(client, newJobApplication){
+  const result = await client.db("job_tracker").collection("job_applications").insertOne(newJobApplication);
+  console.log(`New job application created with the following id: ${result.insertedId}`);
+}
 
 //make the server listen on a port
 server.listen(port, hostname, () => {
