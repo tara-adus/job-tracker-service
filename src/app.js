@@ -52,6 +52,7 @@ const server = http.createServer((req, res) => {
         });
         req.on('end', () => {
           console.log(body);
+          /* TODO do the then thing */
           addJobApplication(body);
           res.end('ok');
         });
@@ -91,7 +92,7 @@ async function addJobApplication(jobApplicationInfo){
     /* right-click on Mongodb Compass and select “copy connection info" and use that the connect string here */
     await client.connect();
     await  listDatabases(client);
-    await addJobApplicationToMongoDB(client, jobAppDocument);
+    // await addJobApplicationToMongoDB(client, jobAppDocument);
   } catch (e) {
     console.error(e);
   } finally {
