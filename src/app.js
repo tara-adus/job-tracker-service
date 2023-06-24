@@ -29,6 +29,10 @@ const server = http.createServer((req, res) => {
         getJobApplications().then(results => {
           res.write(JSON.stringify(results));
           res.end();
+        }).catch(e => {
+          console.log("error = " + e);
+          res.write("error = " + e);
+          res.end();
         })
       }
       else {
