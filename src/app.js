@@ -73,9 +73,10 @@ const server = http.createServer((req, res) => {
 );
 
 async function getJobApplications(){
-  const client = new MongoClient("mongodb://localhost:27017");
+  const client = new MongoClient("mongodb://127.0.0.1:27017");
   try{
     await client.connect();
+    // await  listDatabases(client);
     const cursor = await client.db("job_tracker").collection("job_applications").find();
     const results = await cursor.toArray();
     results.forEach((result) => { 
@@ -91,12 +92,12 @@ async function getJobApplications(){
 
 async function addJobApplication(jobApplicationInfo){
   let jobAppDocument = JSON.parse(jobApplicationInfo);
-  const client = new MongoClient("mongodb://localhost:27017");
+  const client = new MongoClient("mongodb://127.0.0.1:27017");
   try{
     /* right-click on Mongodb Compass and select “copy connection info" and use that the connect string here */
     await client.connect();
-    await  listDatabases(client);
-    // await addJobApplicationToMongoDB(client, jobAppDocument);
+    //await  listDatabases(client);
+    await addJobApplicationToMongoDB(client, jobAppDocument);
   } catch (e) {
     console.error(e);
   } finally {
