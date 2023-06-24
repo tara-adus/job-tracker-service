@@ -24,9 +24,12 @@ const server = http.createServer((req, res) => {
         res.write("base url - no action taken")
         res.end()
       }else if (reqUrl == "/applications"){
-        res.write("retrieving all job applications...")
-        res.write(JSON.stringify());
-        res.end()
+        console.log("retrieving all job applications...")
+        res.setHeader('Content-Type', 'application/json');
+        getJobApplications().then(results => {
+          res.write(JSON.stringify(results));
+          res.end();
+        })
       }
       else {
         res.write("invalid path")
